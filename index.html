@@ -13,6 +13,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration (Get this from Firebase Console)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Make db globally accessible for your App object
+    window.db = db;
+    window.fbActions = { collection, addDoc, onSnapshot, query, orderBy, limit };
+    </script>
 
     <style>
         /* ==========================================================================
@@ -2325,9 +2348,20 @@
                 GalaxyRenderer.init();
                 SoundEngine.init();
 
-                // Generate Initial Data State
-                STATE.thoughts = DataStore.generateUniverse(1200); // Heavy initial dataset
-                this.applyFilters(); // Populates filteredThoughts
+                // REPLACE DataStore.generateUniverse with this:
+                const { onSnapshot, collection, query, orderBy, limit } = window.fbActions;
+                const q = query(collection(window.db, "thoughts"), orderBy("timestamp", "desc"), limit(1000));
+
+                onSnapshot(q, (snapshot) => {
+                    const cloudThoughts = [];
+                    snapshot.forEach((doc) => {
+                        cloudThoughts.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Update the state and refresh the UI
+                    STATE.thoughts = cloudThoughts;
+                    this.applyFilters(); 
+                });
 
                 // Transition out of loader
                 setTimeout(() => {
@@ -2400,6 +2434,15 @@
                     twinkleSpeed: Utils.randomRange(0.05, 0.1), // Fast twinkle
                     twinklePhase: 0
                 };
+                
+                const { addDoc, collection } = window.fbActions;
+                addDoc(collection(window.db, "thoughts"), newStar)
+                    .then(() => {
+                        // Visual feedback
+                        GalaxyRenderer.triggerReleaseAnimation(newStar);
+                        UIController.showToast("Thought released to the global cosmos.", emotion);
+                    })
+                    .catch(err => console.error("Cloud sync failed:", err));
 
                 // 3. Play release sound
                 SoundEngine.playRelease();
