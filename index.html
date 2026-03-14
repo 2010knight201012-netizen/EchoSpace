@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emotion Galaxy | Anonymous Universe of Human Thoughts</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           1. CSS DESIGN SYSTEM & VARIABLES
+           ========================================================================== */
+        :root {
+            /* Core Backgrounds */
+            --bg-deep-space: #020205;
+            --bg-nebula-dark: #0a0a1a;
+            --bg-panel: rgba(10, 10, 20, 0.65);
+            --bg-panel-hover: rgba(20, 20, 35, 0.85);
+            --bg-input: rgba(0, 0, 0, 0.4);
+            
+            /* Typography Colors */
+            --text-main: #ffffff;
+            --text-muted: #8b8b9f;
+            --text-glow: rgba(255, 255, 255, 0.9);
+            
+            /* Emotion Color Palette (Neon/Cosmic) */
+            --emotion-sadness: #4d88ff;    /* Blue */
+            --emotion-love: #ff4d94;       /* Pink */
+            --emotion-anger: #ff3333;      /* Red */
+            --emotion-hope: #33cc80;       /* Green */
+            --emotion-regret: #9933ff;     /* Purple */
+            --emotion-nostalgia: #ffcc00;  /* Gold */
+            --emotion-neutral: #cccccc;    /* Silver */
+
+            /* UI Elements & Borders */
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(255, 255, 255, 0.25);
+            --glass-blur: blur(16px);
+            --shadow-neon: 0 0 20px rgba(255, 255, 255, 0.1);
+            
+            /* Typography Families */
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            
+            /* Animations & Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
+            --transition-slow: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Z-Index Architecture */
+            --z-bg: 0;
+            --z-canvas: 10;
+            --z-hud: 100;
+            --z-overlay: 500;
+            --z-modal: 1000;
+            --z-toast: 2000;
+            --z-loader: 9999;
+        }
+
+        /* ==========================================================================
+           2. RESET & BASE STYLES
+           ========================================================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-deep-space);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Selectable Text */
+        input, textarea, .selectable-text {
+            user-select: text;
+        }
+
+        /* ==========================================================================
+           3. TYPOGRAPHY
+           ========================================================================== */
+        h1, h2, h3, h4, h5, h6, .font-display {
+            font-family: var(--font-display);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        h1 { font-size: 4.5rem; line-height: 1.1; margin-bottom: 1rem; }
+        h2 { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        h3 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        p { line-height: 1.6; color: var(--text-muted); }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #6a6a8c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+        }
+
+        /* ==========================================================================
+           4. UTILITY CLASSES & GLASSMORPHISM
+           ========================================================================== */
+        .glass-panel {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flex-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .fade-out {
+            opacity: 0 !important;
+            transition: opacity 1.5s ease;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+            transition: opacity 1.5s ease;
+        }
+
+        /* ==========================================================================
+           5. BUTTONS & INPUTS
+           ========================================================================== */
+        button {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0.85rem 1.75rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 25px rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-panel-hover);
+            border-color: var(--border-focus);
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #4d88ff 0%, #9933ff 100%);
+            color: white;
+            padding: 0.85rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            border: none;
+            box-shadow: 0 6px 20px rgba(153, 51, 255, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(153, 51, 255, 0.6);
+            background: linear-gradient(135deg, #5c93ff 0%, #a64dff 100%);
+        }
+
+        .btn-action:disabled {
+            background: #2a2a3a;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Forms */
+        input[type="text"], textarea, select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.2rem;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            transition: all var(--transition-fast);
+            outline: none;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255,255,255,0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.5;
+        }
+
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position-x: calc(100% - 15px);
+            background-position-y: 50%;
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1a1a2a;
+            color: white;
+            padding: 10px;
+        }
+
+        /* Switch Toggle (Settings) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--emotion-hope); }
+        input:focus + .slider { box-shadow: 0 0 1px var(--emotion-hope); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* ==========================================================================
+           6. SCREENS & LAYOUTS
+           ========================================================================== */
+        
+        /* Loading Screen */
+        #loader-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-deep-space);
+            z-index: var(--z-loader);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader-core {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #fff;
+            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        /* Welcome Screen */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, var(--bg-nebula-dark) 0%, var(--bg-deep-space) 100%);
+            text-align: center;
+            padding: 2rem;
+            transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+        }
+
+        #welcome-screen.dissolve {
+            opacity: 0;
+            transform: scale(1.15);
+            pointer-events: none;
+        }
+
+        .welcome-content {
+            z-index: 2;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-mark {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2.5rem;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 75%);
+            border-radius: 50%;
+            box-shadow: 0 0 80px rgba(255,255,255,0.6);
+            animation: pulse 4s infinite alternate;
+        }
+
+        /* Galaxy Canvas Container */
+        #galaxy-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: var(--z-canvas);
+            background: radial-gradient(circle at center, #070714 0%, var(--bg-deep-space) 100%);
+            cursor: crosshair;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* HUD Overlay (Main UI) */
+        #hud-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: var(--z-hud);
+            pointer-events: none; /* Pass clicks to canvas */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.5rem;
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
+        }
+        
+        #hud-overlay.visible {
+            opacity: 1;
+        }
+
+        #hud-overlay > * {
+            pointer-events: auto; /* Re-enable clicks for UI elements */
+        }
+
+        /* Top HUD Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .brand-hud {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .brand-hud h2 {
+            font-size: 1.8rem;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        .stats-pill {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-light);
+            border-radius: 30px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-muted);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .stats-pill span strong { color: white; font-family: var(--font-display); font-size: 1.1rem; }
+
+        .top-controls {
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        /* Bottom HUD Bar */
+        .bottom-bar {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+        }
+
+        .main-action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .fab-create {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+            color: #000;
+            box-shadow: 0 0 40px rgba(255,255,255,0.4), 0 0 10px rgba(255,255,255,0.8) inset;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+        }
+
+        .fab-create:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 0 60px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,1) inset;
+        }
+        
+        .fab-create i {
+            width: 36px; height: 36px;
+        }
+
+        /* Side Controls (Bottom left/right) */
+        .controls-left {
+            position: absolute; left: 0; bottom: 0; display: flex; gap: 1rem;
+        }
+        .controls-right {
+            position: absolute; right: 0; bottom: 0; display: flex; gap: 1rem; align-items: center;
+        }
+        .help-text {
+            font-size: 0.8rem; color: #666; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+
+        /* Tooltips */
+        .tooltip-container {
+            position: relative;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            background-color: rgba(0,0,0,0.9);
+            color: #fff;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            white-space: nowrap;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Canvas Star Tooltip (Hovering over stars) */
+        #star-hover-info {
+            position: absolute;
+            background: rgba(15, 15, 25, 0.95);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 12px 18px;
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: var(--z-overlay);
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.1s;
+            transform: translate(-50%, -150%);
+            backdrop-filter: blur(8px);
+            max-width: 280px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+        }
+        #star-hover-info.active { opacity: 1; }
+        #star-hover-info .emotion-dot {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 10px;
+        }
+        #star-hover-info .snippet {
+            font-size: 0.9rem; color: #eee; margin-top: 8px; line-height: 1.4;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* ==========================================================================
+           7. MODALS & PANELS
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: var(--z-modal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 550px;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            background: rgba(15, 15, 25, 0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05) inset;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.75rem;
+        }
+
+        .modal-header h3 { margin: 0; font-family: var(--font-display); }
+        
+        .modal-close {
+            background: rgba(255,255,255,0.05); border: none; color: var(--text-muted); 
+            cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .modal-close:hover { color: white; background: rgba(255,255,255,0.15); transform: rotate(90deg); }
+
+        .modal-body { padding: 1.75rem; }
+
+        .modal-footer {
+            padding: 1.5rem 1.75rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1.2rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Create Modal Specifics */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; margin-bottom: 0.6rem; font-size: 0.95rem; color: var(--text-muted); font-weight: 500;
+        }
+        .char-count {
+            text-align: right; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;
+        }
+
+        /* Read Modal Specifics */
+        #read-modal .modal-content {
+            max-width: 650px;
+            background: rgba(10, 10, 18, 0.95);
+        }
+        .thought-content {
+            font-size: 1.4rem; line-height: 1.8; font-weight: 300; margin-bottom: 2rem;
+            color: #fff; white-space: pre-wrap; font-family: var(--font-display);
+        }
+        .thought-meta {
+            display: flex; gap: 1.2rem; font-size: 0.9rem; color: var(--text-muted); align-items: center;
+        }
+        .emotion-badge {
+            padding: 0.3rem 0.8rem; border-radius: 20px; background: rgba(255,255,255,0.08);
+            color: white; display: flex; align-items: center; gap: 0.6rem; text-transform: capitalize;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .emotion-badge::before {
+            content: ''; display: block; width: 10px; height: 10px; border-radius: 50%;
+            background: var(--dot-color, #ccc); box-shadow: 0 0 10px var(--dot-color, #ccc);
+        }
+
+        /* Dashboard Modal Specifics */
+        #dashboard-modal .modal-content { max-width: 1000px; height: 85vh; display: flex; flex-direction: column; }
+        #dashboard-modal .modal-body { flex: 1; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        
+        .stat-card {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; padding: 1.75rem; position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--card-accent, rgba(255,255,255,0.1));
+        }
+        .stat-card h4 {
+            color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .stat-value { font-size: 3rem; font-family: var(--font-display); font-weight: 700; line-height: 1; }
+        
+        .chart-container { position: relative; height: 280px; width: 100%; }
+        
+        @media (max-width: 850px) { #dashboard-modal .modal-body { grid-template-columns: 1fr; } }
+
+        /* Filter Panel */
+        .filter-panel {
+            position: absolute; top: 100px; right: 2.5rem; width: 340px;
+            z-index: var(--z-overlay); transform: translateX(450px);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1);
+            background: rgba(15, 15, 25, 0.85);
+        }
+        .filter-panel.open { transform: translateX(0); }
+        
+        .filter-section { padding: 1.75rem; border-bottom: 1px solid var(--border-light); }
+        .filter-section:last-child { border-bottom: none; }
+        
+        .filter-title {
+            font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem;
+        }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        
+        .filter-tag {
+            padding: 0.5rem 1rem; border-radius: 20px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; cursor: pointer;
+            transition: all 0.2s; color: var(--text-muted);
+        }
+        .filter-tag:hover { background: rgba(255,255,255,0.12); color: white; }
+        .filter-tag.active {
+            background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5);
+            color: white; box-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+
+        /* Search Overlay */
+        .search-overlay {
+            position: absolute; top: 3rem; left: 50%; transform: translateX(-50%) translateY(-150px);
+            width: 600px; max-width: 90vw; z-index: var(--z-overlay);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1); opacity: 0; pointer-events: none;
+        }
+        .search-overlay.active { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+        .search-input-wrapper { position: relative; display: flex; align-items: center; }
+        .search-input-wrapper i { position: absolute; left: 1.5rem; color: var(--text-muted); width: 24px; height: 24px; }
+        .search-input-wrapper input {
+            padding-left: 4rem; padding-right: 6rem; font-size: 1.2rem; border-radius: 40px;
+            background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            height: 70px;
+        }
+        .search-results-count {
+            position: absolute; right: 1.5rem; font-size: 0.9rem; color: var(--text-muted);
+            background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px;
+        }
+
+        /* Settings Modal Specifics */
+        .settings-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-info h4 { margin: 0 0 0.25rem 0; font-size: 1.05rem; }
+        .settings-info p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+
+        /* ==========================================================================
+           8. TOAST NOTIFICATIONS
+           ========================================================================== */
+        #toast-container {
+            position: fixed; bottom: 2.5rem; left: 2.5rem; z-index: var(--z-toast);
+            display: flex; flex-direction: column; gap: 1rem; pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(15, 15, 25, 0.95); border: 1px solid rgba(255,255,255,0.1);
+            border-left: 4px solid #fff; padding: 1.2rem 1.5rem; border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 1.2rem;
+            backdrop-filter: blur(8px); transform: translateX(-150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+            opacity: 0; max-width: 400px;
+        }
+
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.hide { transform: translateY(20px); opacity: 0; }
+
+        .toast-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .toast-content h4 { margin: 0 0 0.3rem 0; font-size: 1rem; }
+        .toast-content p { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* Toast Colors */
+        .toast.emotion-sadness { border-left-color: var(--emotion-sadness); }
+        .toast.emotion-love { border-left-color: var(--emotion-love); }
+        .toast.emotion-anger { border-left-color: var(--emotion-anger); }
+        .toast.emotion-hope { border-left-color: var(--emotion-hope); }
+        .toast.emotion-regret { border-left-color: var(--emotion-regret); }
+        .toast.emotion-nostalgia { border-left-color: var(--emotion-nostalgia); }
+        .toast.emotion-neutral { border-left-color: var(--emotion-neutral); }
+
+        /* ==========================================================================
+           9. ANIMATIONS & EFFECTS
+           ========================================================================== */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 40px rgba(255,255,255,0.3); }
+            100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 100px rgba(255,255,255,0.7); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .floating { animation: float 7s ease-in-out infinite; }
+
+        /* Visual DOM Particle for Release Animation */
+        .release-particle {
+            position: absolute; width: 6px; height: 6px; background: white; border-radius: 50%;
+            pointer-events: none; z-index: var(--z-overlay); opacity: 1;
+            transition: all 1.2s cubic-bezier(0.1, 0.8, 0.3, 1);
+            box-shadow: 0 0 20px white, 0 0 40px white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Loading Screen -->
+    <div id="loader-screen">
+        <div class="loader-core"></div>
+        <p class="font-display text-muted" style="letter-spacing: 3px; text-transform: uppercase; font-size: 0.9rem;">Initializing Universe</p>
+    </div>
+
+    <!-- 2. Cinematic Welcome Screen -->
+    <div id="welcome-screen">
+        <div class="welcome-content floating">
+            <div class="logo-mark"></div>
+            <h1 class="text-gradient">Emotion Galaxy</h1>
+            <p style="font-size: 1.3rem; max-width: 600px; margin: 0 auto 3rem; color: #a0a0b5;">
+                An experimental universe constructed entirely from anonymous human thoughts, secrets, and emotions.
+            </p>
+            <button class="btn-primary" id="btn-start-exploration" style="font-size: 1.15rem; padding: 1.2rem 3rem;">
+                <i data-lucide="compass"></i> Begin Exploration
+            </button>
+            <p style="margin-top: 2rem; font-size: 0.8rem; color: #555;">Sound experience recommended. Headphone use advised.</p>
+        </div>
+    </div>
+
+    <!-- 3. Main Galaxy Canvas -->
+    <div id="galaxy-container">
+        <canvas id="galaxy-canvas"></canvas>
+        <div id="star-hover-info">
+            <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                <span class="emotion-dot"></span>
+                <span class="room-name" style="font-size: 0.8rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;"></span>
+            </div>
+            <div class="snippet selectable-text"></div>
+        </div>
+    </div>
+
+    <!-- 4. Search Overlay -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-input-wrapper">
+            <i data-lucide="search"></i>
+            <input type="text" id="input-search" placeholder="Search the cosmos for keywords, feelings...">
+            <span class="search-results-count hidden" id="search-count">0 stars</span>
+        </div>
+    </div>
+
+    <!-- 5. HUD Overlay (Heads Up Display) -->
+    <div id="hud-overlay">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="brand-hud">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: white; box-shadow: 0 0 20px white;"></div>
+                <h2 class="font-display">Emotion Galaxy</h2>
+                <div class="stats-pill ml-4">
+                    <span>Stars: <strong id="hud-stat-stars">0</strong></span>
+                    <span>System: <strong style="color:var(--emotion-hope)">Stable</strong></span>
+                </div>
+            </div>
+            
+            <div class="top-controls">
+                <div class="tooltip-container">
+                    <button class="btn-icon" id="btn-search"><i data-lucide="search"></i></button>
+                    <span class="tooltip-text">Search Universe (Ctrl+K)</span>
+                </div>
+                <div class="tooltip-container">
+                    <button class="btn-icon" id="btn-filters"><i data-lucide="layers"></i></button>
+                    <span class="tooltip-text">Filter Rooms & Time</span>
+                </div>
+                <div class="tooltip-container">
+                    <button class="btn-icon" id="btn-stats"><i data-lucide="bar-chart-2"></i></button>
+                    <span class="tooltip-text">Emotion Dashboard</span>
+                </div>
+                <div class="tooltip-container">
+                    <button class="btn-icon" id="btn-settings"><i data-lucide="settings"></i></button>
+                    <span class="tooltip-text">System Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="filter-panel glass-panel" id="filter-panel">
+            <div class="filter-section">
+                <div class="filter-title"><i data-lucide="door-open" size="18"></i> Confession Rooms</div>
+                <div class="tag-cloud" id="room-filters">
+                    <button class="filter-tag active" data-filter="all">All Rooms</button>
+                    <button class="filter-tag" data-filter="Love">Love</button>
+                    <button class="filter-tag" data-filter="Secrets">Secrets</button>
+                    <button class="filter-tag" data-filter="Regret">Regret</button>
+                    <button class="filter-tag" data-filter="Dreams">Dreams</button>
+                    <button class="filter-tag" data-filter="Shower Thoughts">Shower Thoughts</button>
+                    <button class="filter-tag" data-filter="Random">Random</button>
+                </div>
+            </div>
+            <div class="filter-section">
+                <div class="filter-title"><i data-lucide="clock" size="18"></i> Temporal Filters</div>
+                <div class="tag-cloud" id="time-filters">
+                    <button class="filter-tag active" data-time="all">All Time</button>
+                    <button class="filter-tag" data-time="hour">Last Hour</button>
+                    <button class="filter-tag" data-time="today">Today</button>
+                    <button class="filter-tag" data-time="week">This Week</button>
+                </div>
+            </div>
+            <div class="filter-section">
+                <div class="filter-title"><i data-lucide="palette" size="18"></i> Emotion Spectrum</div>
+                <div class="tag-cloud" id="emotion-filters">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+            <!-- Left Controls -->
+            <div class="controls-left">
+                <button class="btn-primary" id="btn-random" style="background: rgba(255,255,255,0.1);">
+                    <i data-lucide="shuffle"></i> Random Thought
+                </button>
+            </div>
+
+            <!-- Center Action -->
+            <div class="main-action-area">
+                <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6); letter-spacing: 1.5px; text-transform: uppercase;">Release a Thought</p>
+                <div class="tooltip-container">
+                    <button class="fab-create" id="btn-create">
+                        <i data-lucide="plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="controls-right">
+                <span class="help-text">Drag to pan &bull; Scroll to zoom</span>
+                <button class="btn-icon" id="btn-reset-cam" style="width:40px;height:40px;">
+                    <i data-lucide="crosshair" size="18"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         6. MODALS
+         ========================================================================== -->
+    
+    <!-- Create Confession Modal -->
+    <div class="modal-overlay" id="create-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3>Release a Thought</h3>
+                <button class="modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 1.75rem; font-size: 0.95rem; line-height: 1.5;">
+                    Your thought is entirely anonymous. Our AI will analyze its emotional resonance and assign it a color before it joins the cosmic expanse.
+                </p>
+                
+                <div class="form-group">
+                    <label for="confession-room">Choose a Constellation (Room)</label>
+                    <select id="confession-room">
+                        <option value="Random">Random Thoughts</option>
+                        <option value="Love">Love Room</option>
+                        <option value="Secrets">Secrets Room</option>
+                        <option value="Regret">Regret Room</option>
+                        <option value="Dreams">Dream Room</option>
+                        <option value="Shower Thoughts">Shower Thoughts</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="confession-text">Your Thought</label>
+                    <textarea id="confession-text" placeholder="What's weighing on your mind? Type it here..."></textarea>
+                    <div class="char-count"><span id="char-current">0</span> / 1000</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary modal-close-btn" style="border:none; background:none; box-shadow:none;">Cancel</button>
+                <button class="btn-action" id="btn-submit-thought" disabled>
+                    Release to Cosmos <i data-lucide="send" size="18" style="margin-left: 8px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Read Confession Modal -->
+    <div class="modal-overlay" id="read-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header" style="border-bottom: none; padding-bottom: 0.5rem;">
+                <div class="thought-meta">
+                    <span class="emotion-badge" id="read-emotion">Emotion</span>
+                    <span id="read-room"><i data-lucide="door-open" size="16"></i> Room</span>
+                    <span id="read-time"><i data-lucide="clock" size="16"></i> Time</span>
+                </div>
+                <button class="modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="thought-content selectable-text" id="read-content">
+                    Loading thought...
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: none; justify-content: space-between;">
+                <button class="btn-primary" id="btn-copy-thought" style="font-size: 0.95rem; padding: 0.6rem 1.2rem;">
+                    <i data-lucide="copy" size="16"></i> Copy Text
+                </button>
+                <button class="btn-primary" id="btn-read-next" style="font-size: 0.95rem; padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.15);">
+                    Next Random <i data-lucide="arrow-right" size="16"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div class="modal-overlay" id="dashboard-modal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3>Cosmic Emotion Analytics</h3>
+                <button class="modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Left Column -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="stat-card" style="--card-accent: #fff;">
+                            <h4>Total Thoughts</h4>
+                            <div class="stat-value text-glow" id="stat-total">0</div>
+                        </div>
+                        <div class="stat-card" id="card-dominant" style="--card-accent: var(--emotion-hope);">
+                            <h4>Dominant Emotion</h4>
+                            <div class="stat-value" id="stat-dominant" style="font-size: 2rem; color: var(--emotion-hope);">Hope</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="flex: 1; --card-accent: transparent;">
+                        <h4>Universal Emotion Distribution</h4>
+                        <div class="chart-container">
+                            <canvas id="emotionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                    <div class="stat-card" style="--card-accent: transparent;">
+                        <h4>Activity by Constellation (Room)</h4>
+                        <div class="chart-container">
+                            <canvas id="roomChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; --card-accent: transparent;">
+                        <i data-lucide="activity" size="56" style="color: rgba(255,255,255,0.3); margin-bottom: 1.5rem;"></i>
+                        <h4 style="margin:0; font-size: 1.2rem;">Galaxy Health</h4>
+                        <p style="font-size: 0.95rem; margin-top: 0.5rem; max-width: 80%;">The universe is expanding steadily. Thoughts older than 24 hours slowly fade to maintain balance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content glass-panel" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>System Settings</h3>
+                <button class="modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-row">
+                    <div class="settings-info">
+                        <h4>Immersive Audio</h4>
+                        <p>Ambient background drone & sound effects</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-sound" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-info">
+                        <h4>Temporal Decay</h4>
+                        <p>Stars fade away after 24 hours</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-decay" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-info">
+                        <h4>Galaxy Rotation</h4>
+                        <p>Slow continuous cosmic movement</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-rotation" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary modal-close-btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- ==========================================================================
+         7. JAVASCRIPT APPLICATION ARCHITECTURE
+         ========================================================================== -->
+    <script>
+        /**
+         * EMOTION GALAXY ARCHITECTURE
+         * A complete Vanilla JS implementation of a cosmic text visualization platform.
+         */
+
+        // --------------------------------------------------------------------------
+        // 1. GLOBAL CONFIGURATION & STATE
+        // --------------------------------------------------------------------------
+        const CONFIG = {
+            maxStars: 2500,
+            starBaseSize: 2.0,
+            cameraZZ: 1200,          // Depth of field constant
+            decayTimeMs: 24 * 60 * 60 * 1000, // 24 hours lifecycle
+            rotationSpeed: 0.0002,   // Radians per frame
+            
+            emotions: {
+                sadness:   { name: 'Sadness',   color: '#4d88ff', hex: 0x4d88ff },
+                love:      { name: 'Love',      color: '#ff4d94', hex: 0xff4d94 },
+                anger:     { name: 'Anger',     color: '#ff3333', hex: 0xff3333 },
+                hope:      { name: 'Hope',      color: '#33cc80', hex: 0x33cc80 },
+                regret:    { name: 'Regret',    color: '#9933ff', hex: 0x9933ff },
+                nostalgia: { name: 'Nostalgia', color: '#ffcc00', hex: 0xffcc00 },
+                neutral:   { name: 'Neutral',   color: '#cccccc', hex: 0xcccccc }
+            },
+            rooms: ['Love', 'Secrets', 'Regret', 'Dreams', 'Shower Thoughts', 'Random']
+        };
+
+        const STATE = {
+            thoughts: [],            // Master array of all thought objects
+            filteredThoughts: [],    // Array currently rendered (post-filters)
+            
+            filters: {
+                room: 'all',         // 'all' or room name
+                time: 'all',         // 'all', 'hour', 'today', 'week'
+                emotion: 'all',      // 'all' or emotion key
+                search: ''           // string
+            },
+            
+            settings: {
+                soundEnabled: true,
+                decayEnabled: true,
+                rotationEnabled: true
+            },
+            
+            view: 'loading',         // loading, intro, galaxy
+            
+            camera: { 
+                x: 0, y: 0, z: 0, 
+                zoom: 1, 
+                targetX: 0, targetY: 0, targetZoom: 1 
+            },
+            
+            interaction: {
+                mouseX: 0, mouseY: 0,
+                isDragging: false,
+                lastDragX: 0, lastDragY: 0,
+                hoveredStarId: null
+            },
+            
+            charts: { emotion: null, room: null }
+        };
+
+        // --------------------------------------------------------------------------
+        // 2. UTILITY FUNCTIONS
+        // --------------------------------------------------------------------------
+        const Utils = {
+            generateId: () => 'star_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(),
+            
+            formatDate: (ms) => {
+                const date = new Date(ms);
+                return new Intl.DateTimeFormat('en-US', { 
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }).format(date);
+            },
+            
+            hexToRgb: (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : { r: 255, g: 255, b: 255 }; // Fallback white
+            },
+
+            debounce: (func, wait) => {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => { clearTimeout(timeout); func(...args); };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            // Random number between min and max
+            randomRange: (min, max) => Math.random() * (max - min) + min
+        };
+
+        // --------------------------------------------------------------------------
+        // 3. SOUND ENGINE (Web Audio API Synthesizer)
+        // --------------------------------------------------------------------------
+        const SoundEngine = {
+            ctx: null,
+            ambientGain: null,
+            ambientOscillators: [],
+            isInitialized: false,
+
+            init: function() {
+                if (this.isInitialized) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    this.isInitialized = true;
+                    if(STATE.settings.soundEnabled) {
+                        this.startAmbient();
+                    }
+                } catch(e) {
+                    console.warn("Web Audio API not supported.", e);
+                }
+            },
+
+            resume: function() {
+                if(this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            startAmbient: function() {
+                if (!this.ctx || !STATE.settings.soundEnabled) return;
+                if (this.ambientOscillators.length > 0) return; // Already playing
+
+                this.ambientGain = this.ctx.createGain();
+                this.ambientGain.gain.value = 0; // Fade in
+                
+                // Add low pass filter for deep space feel
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 150; // Deep rumble
+
+                this.ambientGain.connect(filter);
+                filter.connect(this.ctx.destination);
+
+                // Create a drone using 3 detuned sawtooth oscillators
+                const freqs = [55, 55.5, 54.5]; // Low A notes slightly detuned
+                freqs.forEach(freq => {
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = freq;
+                    osc.connect(this.ambientGain);
+                    osc.start();
+                    this.ambientOscillators.push(osc);
+                });
+
+                // Fade in ambient volume to 0.1
+                this.ambientGain.gain.setTargetAtTime(0.1, this.ctx.currentTime, 2);
+            },
+
+            stopAmbient: function() {
+                if (this.ambientGain) {
+                    // Fade out
+                    this.ambientGain.gain.setTargetAtTime(0, this.ctx.currentTime, 1);
+                    setTimeout(() => {
+                        this.ambientOscillators.forEach(osc => osc.stop());
+                        this.ambientOscillators = [];
+                    }, 2000);
+                }
+            },
+
+            playTwinkle: function(panX = 0) { // panX from -1 to 1
+                if (!this.ctx || !STATE.settings.soundEnabled) return;
+                
+                const t = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const panner = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+
+                osc.type = 'sine';
+                // Random high pitch for star twinkle (C5 to C6)
+                osc.frequency.setValueAtTime(Utils.randomRange(523.25, 1046.5), t);
+                
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.05, t + 0.05); // quick attack
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5); // decay
+
+                osc.connect(gain);
+                
+                if (panner) {
+                    panner.pan.value = Math.max(-1, Math.min(1, panX));
+                    gain.connect(panner);
+                    panner.connect(this.ctx.destination);
+                } else {
+                    gain.connect(this.ctx.destination);
+                }
+
+                osc.start(t);
+                osc.stop(t + 0.5);
+            },
+
+            playRelease: function() {
+                if (!this.ctx || !STATE.settings.soundEnabled) return;
+
+                const t = this.ctx.currentTime;
+                
+                // Sweep up effect
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, t);
+                osc.frequency.exponentialRampToValueAtTime(800, t + 0.5); // sweep up
+                
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.2, t + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 1.5);
+                
+                // Add some delay/echo
+                const delay = this.ctx.createDelay();
+                delay.delayTime.value = 0.3;
+                const delayGain = this.ctx.createGain();
+                delayGain.gain.value = 0.4;
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                // Echo routing
+                gain.connect(delay);
+                delay.connect(delayGain);
+                delayGain.connect(this.ctx.destination);
+                delayGain.connect(delay); // feedback loop
+
+                osc.start(t);
+                osc.stop(t + 1.5);
+            },
+
+            playNotification: function() {
+                if (!this.ctx || !STATE.settings.soundEnabled) return;
+
+                const t = this.ctx.currentTime;
+                
+                // Two-tone bell (Perfect 5th)
+                const playTone = (freq, timeOffset) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    
+                    gain.gain.setValueAtTime(0, t + timeOffset);
+                    gain.gain.linearRampToValueAtTime(0.15, t + timeOffset + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + timeOffset + 1.0);
+                    
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    
+                    osc.start(t + timeOffset);
+                    osc.stop(t + timeOffset + 1.0);
+                };
+
+                playTone(523.25, 0);       // C5
+                playTone(783.99, 0.15);    // G5 (delayed slightly)
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 4. AI EMOTION ANALYZER (NLP Mock)
+        // --------------------------------------------------------------------------
+        const EmotionAnalyzer = {
+            // Extensive dictionary for basic sentiment/emotion mapping
+            dictionary: {
+                sadness: ['sad', 'cry', 'tears', 'lonely', 'alone', 'depressed', 'heartbreak', 'grief', 'miss', 'empty', 'pain', 'hurts', 'miserable', 'sorrow', 'despair', 'lost', 'broken', 'heavy', 'crying', 'unhappy', 'devastated', 'hopeless', 'numb'],
+                love: ['love', 'adore', 'heart', 'crush', 'kiss', 'romantic', 'soulmate', 'together', 'forever', 'beautiful', 'affection', 'caring', 'sweetheart', 'darling', 'infatuated', 'passionate', 'married', 'wife', 'husband', 'partner', 'boyfriend', 'girlfriend'],
+                anger: ['hate', 'angry', 'mad', 'furious', 'rage', 'annoy', 'stupid', 'idiot', 'curse', 'frustrated', 'boiling', 'bullshit', 'unfair', 'pissed', 'enraged', 'livid', 'fury', 'outrage', 'resent', 'annoyed', 'irritated'],
+                hope: ['hope', 'dream', 'future', 'wish', 'better', 'tomorrow', 'believe', 'faith', 'optimistic', 'goals', 'aspire', 'looking forward', 'one day', 'pray', 'inspire', 'overcome', 'improve', 'chance', 'opportunity'],
+                regret: ['regret', 'sorry', 'mistake', 'apologize', 'guilt', 'fault', 'ruined', 'foolish', 'ashamed', 'shouldn\'t', 'failed', 'terrible', 'fix', 'undo', 'wish i hadn\'t', 'my bad', 'forgive'],
+                nostalgia: ['remember', 'childhood', 'past', 'used to', 'memories', 'back then', 'old days', 'school days', 'miss the time', 'nostalgic', 'yesterday', 'history', 'reminisce', 'younger', 'simpler']
+            },
+
+            analyze: function(text) {
+                // Tokenize and clean text
+                const words = text.toLowerCase().match(/\b(\w+)\b/g);
+                if (!words) return 'neutral';
+
+                // Initialize scores
+                let scores = { sadness: 0, love: 0, anger: 0, hope: 0, regret: 0, nostalgia: 0, neutral: 0.1 };
+
+                // Multi-word phrase check (simple)
+                const lowerText = text.toLowerCase();
+                if(lowerText.includes("wish i hadn't") || lowerText.includes("should have")) scores.regret += 2;
+                if(lowerText.includes("looking forward")) scores.hope += 2;
+
+                // Single word check
+                words.forEach(word => {
+                    for (const [emotion, keywords] of Object.entries(this.dictionary)) {
+                        if (keywords.includes(word)) {
+                            scores[emotion] += 1;
+                        }
+                    }
+                });
+
+                // Find dominant emotion
+                let dominantEmotion = 'neutral';
+                let maxScore = 0;
+                
+                for (const [emotion, score] of Object.entries(scores)) {
+                    if (score > maxScore) {
+                        maxScore = score;
+                        dominantEmotion = emotion;
+                    }
+                }
+
+                return dominantEmotion;
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 5. DATA STORE (Mock Data Generation)
+        // --------------------------------------------------------------------------
+        const DataStore = {
+            templates: [
+                { text: "I still think about her every time I hear that one song.", emotion: "nostalgia", room: "Love" },
+                { text: "I lied on my resume and now I'm managing a team of 10. I have no idea what I'm doing.", emotion: "secrets", room: "Secrets" },
+                { text: "Sometimes I hope the world just pauses for a week so I can catch up on sleep.", emotion: "hope", room: "Shower Thoughts" },
+                { text: "I deeply regret not visiting my grandfather one last time before he passed. I was too 'busy'.", emotion: "regret", room: "Regret" },
+                { text: "I'm so angry at how unfair life is. People who do everything right still lose.", emotion: "anger", room: "Random" },
+                { text: "I cry in my car on the way home so my kids don't see me sad.", emotion: "sadness", room: "Secrets" },
+                { text: "I dream of buying a small cabin in the woods and disconnecting from the internet forever.", emotion: "hope", room: "Dreams" },
+                { text: "My biggest secret is that I actually don't like my best friend's partner. They are toxic.", emotion: "anger", room: "Secrets" },
+                { text: "I met someone on a train 5 years ago, we talked for 2 hours, never exchanged numbers. I still love them.", emotion: "love", room: "Love" },
+                { text: "Why do we say 'slept like a baby' when babies wake up crying every two hours?", emotion: "neutral", room: "Shower Thoughts" },
+                { text: "I miss the days when my only worry was what cartoon to watch on Saturday morning.", emotion: "nostalgia", room: "Random" },
+                { text: "I hope tomorrow is a better day. Today was really, really hard.", emotion: "hope", room: "Random" },
+                { text: "I broke someone's heart because I was scared. I'm so sorry.", emotion: "regret", room: "Regret" },
+                { text: "I'm furious that someone ate my sandwich from the office fridge. FURIOUS.", emotion: "anger", room: "Random" },
+                { text: "Just realized that water is basically Earth's default beverage.", emotion: "neutral", room: "Shower Thoughts" },
+                { text: "I feel incredibly lonely even when I'm in a room full of people.", emotion: "sadness", room: "Random" },
+                { text: "I'm secretly building an app that I hope will change my life and let me quit my job.", emotion: "hope", room: "Dreams" },
+                { text: "I love the smell of rain on dry soil. It makes me feel alive.", emotion: "love", room: "Random" },
+                { text: "I stole a candy bar when I was 7 and I still feel guilty about it 20 years later.", emotion: "regret", room: "Secrets" },
+                { text: "I dream of waking up one day and feeling completely at peace with who I am.", emotion: "hope", room: "Dreams" },
+                { text: "I'm mad at myself for trusting someone who showed me repeatedly they couldn't be trusted.", emotion: "anger", room: "Regret" },
+                { text: "Every time I see an old couple holding hands, I tear up. I want that.", emotion: "love", room: "Love" },
+                { text: "If tomatoes are fruit, then ketchup is technically a smoothie.", emotion: "neutral", room: "Shower Thoughts" },
+                { text: "I miss the smell of my old elementary school library. It smelled like dust and endless possibilities.", emotion: "nostalgia", room: "Nostalgia" }
+            ],
+
+            generateUniverse: function(count) {
+                const thoughts = [];
+                const now = Date.now();
+                const timeSpread = 24 * 60 * 60 * 1000 * 2; // Spread over last 48 hours to show decay
+
+                for (let i = 0; i < count; i++) {
+                    const template = this.templates[i % this.templates.length];
+                    
+                    // Variation for search uniqueness
+                    let text = template.text;
+                    if (i >= this.templates.length) {
+                        text = text.substring(0, text.length - 1) + `... [Fragment #${i}]`;
+                    }
+
+                    const timeOffset = Math.random() * timeSpread;
+                    
+                    // Spherical distribution
+                    const radius = Utils.randomRange(200, 3000); // 3D distance from center
+                    const theta = Math.random() * 2 * Math.PI;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    
+                    thoughts.push({
+                        id: Utils.generateId(),
+                        text: text,
+                        emotion: template.emotion,
+                        room: template.room,
+                        timestamp: now - timeOffset,
+                        
+                        // 3D coordinates
+                        x: radius * Math.sin(phi) * Math.cos(theta),
+                        y: radius * Math.sin(phi) * Math.sin(theta),
+                        z: radius * Math.cos(phi),
+                        
+                        // Visual properties
+                        baseSize: Utils.randomRange(0.8, 2.5),
+                        twinkleSpeed: Utils.randomRange(0.02, 0.08),
+                        twinklePhase: Math.random() * Math.PI * 2
+                    });
+                }
+                return thoughts;
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 6. GALAXY RENDERER (Canvas 3D Engine)
+        // --------------------------------------------------------------------------
+        const GalaxyRenderer = {
+            canvas: null,
+            ctx: null,
+            width: 0,
+            height: 0,
+            time: 0,
+            animationFrameId: null,
+            
+            nebulaParticles: [], // Background dust
+
+            init: function() {
+                this.canvas = document.getElementById('galaxy-canvas');
+                // Use alpha:false for optimization, we draw solid background
+                this.ctx = this.canvas.getContext('2d', { alpha: false }); 
+                
+                this.resize();
+                window.addEventListener('resize', Utils.debounce(() => this.resize(), 200));
+                
+                this.setupInteraction();
+                this.generateNebula();
+                
+                this.startLoop();
+            },
+
+            resize: function() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+            },
+
+            generateNebula: function() {
+                this.nebulaParticles = [];
+                for (let i = 0; i < 400; i++) {
+                    this.nebulaParticles.push({
+                        x: Utils.randomRange(-3000, 3000),
+                        y: Utils.randomRange(-3000, 3000),
+                        z: Utils.randomRange(0, 4000), // Only positive Z (in front of camera base)
+                        size: Utils.randomRange(1, 4),
+                        alpha: Utils.randomRange(0.05, 0.25),
+                        speedZ: Utils.randomRange(0.2, 0.8)
+                    });
+                }
+            },
+
+            setupInteraction: function() {
+                // Mouse Move
+                this.canvas.addEventListener('mousemove', (e) => {
+                    STATE.interaction.mouseX = e.clientX;
+                    STATE.interaction.mouseY = e.clientY;
+
+                    if (STATE.interaction.isDragging) {
+                        const dx = e.clientX - STATE.interaction.lastDragX;
+                        const dy = e.clientY - STATE.interaction.lastDragY;
+                        
+                        // Move camera target opposite to drag direction
+                        STATE.camera.targetX -= dx / STATE.camera.zoom;
+                        STATE.camera.targetY -= dy / STATE.camera.zoom;
+                        
+                        STATE.interaction.lastDragX = e.clientX;
+                        STATE.interaction.lastDragY = e.clientY;
+                        this.canvas.style.cursor = 'grabbing';
+                    } else {
+                        this.canvas.style.cursor = 'crosshair';
+                        this.detectHover();
+                    }
+                });
+
+                // Mouse Down (Drag Start)
+                this.canvas.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return; // Left click only
+                    STATE.interaction.isDragging = true;
+                    STATE.interaction.lastDragX = e.clientX;
+                    STATE.interaction.lastDragY = e.clientY;
+                });
+
+                // Mouse Up
+                window.addEventListener('mouseup', () => {
+                    STATE.interaction.isDragging = false;
+                    this.canvas.style.cursor = 'crosshair';
+                });
+
+                // Scroll (Zoom)
+                this.canvas.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const zoomSensitivity = 0.001;
+                    STATE.camera.targetZoom *= (1 - e.deltaY * zoomSensitivity);
+                    // Clamp zoom limits
+                    STATE.camera.targetZoom = Math.max(0.3, Math.min(STATE.camera.targetZoom, 4.0));
+                }, { passive: false });
+
+                // Click (Open Star)
+                this.canvas.addEventListener('click', () => {
+                    if (STATE.interaction.hoveredStarId && !STATE.interaction.isDragging) {
+                        UIController.openReadModal(STATE.interaction.hoveredStarId);
+                    }
+                });
+            },
+
+            detectHover: function() {
+                // Only detect hover if not dragging and overlay is visible (exploration mode)
+                if (STATE.view !== 'galaxy') return;
+
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                let closestStar = null;
+                let minSubDist = 20; // Hitbox radius threshold in pixels
+
+                // Iterate backwards (front-most stars first, as they are drawn last after Z-sorting)
+                // Note: STATE.filteredThoughts is NOT naturally Z-sorted here, so we must calculate Z.
+                // For exact precision, we'd sort first, but for performance, we approximate.
+                
+                let minZ = Infinity;
+
+                for (let i = 0; i < STATE.filteredThoughts.length; i++) {
+                    const star = STATE.filteredThoughts[i];
+                    
+                    // Apply rotation to calculate actual Z relative to camera
+                    const rX = star.x * Math.cos(this.time * CONFIG.rotationSpeed) - star.z * Math.sin(this.time * CONFIG.rotationSpeed);
+                    const rZ = star.z * Math.cos(this.time * CONFIG.rotationSpeed) + star.x * Math.sin(this.time * CONFIG.rotationSpeed);
+                    
+                    const dz = rZ - STATE.camera.z;
+                    if (dz < -CONFIG.cameraZZ) continue; // Behind camera
+
+                    const scale = CONFIG.cameraZZ / (CONFIG.cameraZZ + dz);
+                    const screenX = cx + (rX - STATE.camera.x) * scale * STATE.camera.zoom;
+                    const screenY = cy + (star.y - STATE.camera.y) * scale * STATE.camera.zoom;
+
+                    // Distance from mouse
+                    const dx = STATE.interaction.mouseX - screenX;
+                    const dy = STATE.interaction.mouseY - screenY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+
+                    // Dynamic hitbox based on scale
+                    if (dist < minSubDist * scale * STATE.camera.zoom) {
+                        // If multiple stars overlap, pick the closest one (lowest Z)
+                        if (rZ < minZ) {
+                            closestStar = star;
+                            minZ = rZ;
+                        }
+                    }
+                }
+
+                if (closestStar) {
+                    if (STATE.interaction.hoveredStarId !== closestStar.id) {
+                        STATE.interaction.hoveredStarId = closestStar.id;
+                        this.canvas.style.cursor = 'pointer';
+                        UIController.showStarTooltip(closestStar, STATE.interaction.mouseX, STATE.interaction.mouseY);
+                        
+                        // Play sound based on screen position (-1 to 1)
+                        const panX = (STATE.interaction.mouseX / this.width) * 2 - 1;
+                        SoundEngine.playTwinkle(panX);
+                    } else {
+                        // Update tooltip position
+                        UIController.updateStarTooltipPos(STATE.interaction.mouseX, STATE.interaction.mouseY);
+                    }
+                } else {
+                    if (STATE.interaction.hoveredStarId) {
+                        STATE.interaction.hoveredStarId = null;
+                        this.canvas.style.cursor = STATE.interaction.isDragging ? 'grabbing' : 'crosshair';
+                        UIController.hideStarTooltip();
+                    }
+                }
+            },
+
+            startLoop: function() {
+                const loop = () => {
+                    this.update();
+                    this.draw();
+                    this.animationFrameId = requestAnimationFrame(loop);
+                };
+                loop();
+            },
+
+            update: function() {
+                this.time += 1;
+
+                // 1. Camera interpolation (smooth movement)
+                STATE.camera.x += (STATE.camera.targetX - STATE.camera.x) * 0.08;
+                STATE.camera.y += (STATE.camera.targetY - STATE.camera.y) * 0.08;
+                STATE.camera.zoom += (STATE.camera.targetZoom - STATE.camera.zoom) * 0.1;
+
+                // 2. Continuous Parallax drift if not dragging (to make galaxy feel alive)
+                if (!STATE.interaction.isDragging && STATE.settings.rotationEnabled) {
+                    // Just let the rotation matrix handle the movement
+                }
+
+                // 3. Update Nebula Dust
+                this.nebulaParticles.forEach(p => {
+                    p.z -= p.speedZ;
+                    if (p.z < 0) p.z = 4000; // loop back to deep space
+                });
+            },
+
+            draw: function() {
+                // 1. Clear background
+                this.ctx.fillStyle = '#020205'; // Deep space color
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                const cx = this.width / 2;
+                const cy = this.height / 2;
+                const now = Date.now();
+                const isSearching = STATE.filters.search.length > 0;
+
+                // 2. Draw Nebula Dust (Background Layer)
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                this.nebulaParticles.forEach(p => {
+                    const scale = CONFIG.cameraZZ / (CONFIG.cameraZZ + p.z);
+                    // Dust moves slightly opposite to camera to create parallax
+                    const sx = cx + (p.x - STATE.camera.x * 0.1) * scale * STATE.camera.zoom;
+                    const sy = cy + (p.y - STATE.camera.y * 0.1) * scale * STATE.camera.zoom;
+                    
+                    if (sx > 0 && sx < this.width && sy > 0 && sy < this.height) {
+                        this.ctx.globalAlpha = p.alpha * scale;
+                        this.ctx.beginPath();
+                        this.ctx.arc(sx, sy, p.size * scale * STATE.camera.zoom, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                });
+
+                this.ctx.globalAlpha = 1;
+
+                // 3. Prepare Stars for 3D Rendering
+                let renderList = [];
+                const angle = STATE.settings.rotationEnabled ? this.time * CONFIG.rotationSpeed : 0;
+                const cosA = Math.cos(angle);
+                const sinA = Math.sin(angle);
+
+                STATE.filteredThoughts.forEach(star => {
+                    // Apply Y-axis rotation to base coordinates
+                    const rX = star.x * cosA - star.z * sinA;
+                    const rZ = star.z * cosA + star.x * sinA;
+                    const rY = star.y; // Keep Y static
+
+                    // Z relative to camera
+                    const dz = rZ - STATE.camera.z;
+                    if (dz < -CONFIG.cameraZZ + 10) return; // Behind camera frustum plane
+
+                    const scale = CONFIG.cameraZZ / (CONFIG.cameraZZ + dz);
+                    const screenX = cx + (rX - STATE.camera.x) * scale * STATE.camera.zoom;
+                    const screenY = cy + (rY - STATE.camera.y) * scale * STATE.camera.zoom;
+
+                    // 2D Frustum culling (off-screen)
+                    const padding = 100 * STATE.camera.zoom;
+                    if (screenX < -padding || screenX > this.width + padding || 
+                        screenY < -padding || screenY > this.height + padding) return;
+
+                    // Calculate Alpha based on Temporal Decay
+                    let timeAlpha = 1.0;
+                    if (STATE.settings.decayEnabled) {
+                        const ageMs = now - star.timestamp;
+                        if (ageMs > CONFIG.decayTimeMs) {
+                            timeAlpha = 0; // Dead star
+                        } else {
+                            // Fade out over the last 50% of its life
+                            const lifeRatio = ageMs / CONFIG.decayTimeMs;
+                            if (lifeRatio > 0.5) {
+                                timeAlpha = 1.0 - ((lifeRatio - 0.5) * 2);
+                            }
+                        }
+                    }
+                    if (timeAlpha <= 0) return;
+
+                    // Calculate Alpha based on Search
+                    let searchAlphaMultiplier = 1.0;
+                    let isMatch = false;
+                    if (isSearching) {
+                        isMatch = star.text.toLowerCase().includes(STATE.filters.search);
+                        if (!isMatch) searchAlphaMultiplier = 0.1; // Dim non-matches
+                        else searchAlphaMultiplier = 1.5; // Brighten matches
+                    }
+
+                    renderList.push({
+                        star: star,
+                        dz: dz,
+                        screenX: screenX,
+                        screenY: screenY,
+                        scale: scale,
+                        timeAlpha: timeAlpha,
+                        searchMultiplier: searchAlphaMultiplier,
+                        isMatch: isMatch
+                    });
+                });
+
+                // 4. Sort by Z-depth (Back to Front) for correct rendering overlap
+                renderList.sort((a, b) => b.dz - a.dz);
+
+                // 5. Draw Stars
+                renderList.forEach(item => {
+                    const { star, screenX, screenY, scale, timeAlpha, searchMultiplier, isMatch } = item;
+                    
+                    const isHovered = (star.id === STATE.interaction.hoveredStarId);
+                    
+                    // Base size logic
+                    let currentBaseSize = star.baseSize;
+                    if (isHovered) currentBaseSize *= 2.5;
+                    if (isMatch) currentBaseSize *= 1.5;
+                    
+                    const radius = Math.max(0.5, currentBaseSize * scale * STATE.camera.zoom);
+                    
+                    const emotionConfig = CONFIG.emotions[star.emotion] || CONFIG.emotions.neutral;
+                    const rgb = Utils.hexToRgb(emotionConfig.color);
+                    
+                    // Twinkle effect (sine wave over time)
+                    const twinkle = Math.sin(this.time * star.twinkleSpeed + star.twinklePhase);
+                    const twinkleAlpha = Math.max(0.2, Math.min(1.0, 0.6 + twinkle * 0.4));
+                    
+                    const finalAlpha = Math.min(1.0, timeAlpha * twinkleAlpha * searchMultiplier * (isHovered ? 1.5 : 1));
+
+                    this.ctx.globalAlpha = finalAlpha;
+
+                    // A. Draw Outer Glow (Gradient)
+                    const glowRadius = radius * (isHovered || isMatch ? 6 : 4);
+                    const gradient = this.ctx.createRadialGradient(screenX, screenY, 0, screenX, screenY, glowRadius);
+                    
+                    gradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`);
+                    gradient.addColorStop(0.2, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
+                    gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX, screenY, glowRadius, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // B. Draw Solid Core
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.globalAlpha = isHovered ? 1 : Math.min(1, finalAlpha + 0.3);
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX, screenY, radius * 0.6, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    
+                    // C. Draw connecting line if hovered to indicate focus
+                    if (isHovered) {
+                        this.ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                        this.ctx.lineWidth = 1;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(screenX, screenY);
+                        this.ctx.lineTo(screenX, screenY - 50); // Line pointing up
+                        this.ctx.stroke();
+                        
+                        // Small dot at end of line
+                        this.ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`;
+                        this.ctx.beginPath();
+                        this.ctx.arc(screenX, screenY - 50, 2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                });
+
+                this.ctx.globalAlpha = 1;
+            },
+            
+            triggerReleaseAnimation: function(star) {
+                // Creates a DOM particle that flies into the center of the screen,
+                // then adds the actual star data to the canvas engine.
+                
+                const particle = document.createElement('div');
+                particle.className = 'release-particle';
+                const color = CONFIG.emotions[star.emotion].color;
+                particle.style.background = color;
+                particle.style.boxShadow = `0 0 20px ${color}, 0 0 40px ${color}`;
+                
+                // Start near bottom center
+                particle.style.left = '50%';
+                particle.style.bottom = '100px';
+                document.body.appendChild(particle);
+                
+                // Force reflow
+                void particle.offsetWidth;
+                
+                // Animate to center of screen (simulating flying into distance)
+                requestAnimationFrame(() => {
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.opacity = '0';
+                    particle.style.transform = 'scale(0.1)';
+                });
+                
+                // Add to internal data after animation completes
+                setTimeout(() => {
+                    particle.remove();
+                    STATE.thoughts.push(star);
+                    App.applyFilters(); // Re-filter and update UI
+                }, 1200);
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 7. STATISTICS ENGINE (Chart.js Wrapper)
+        // --------------------------------------------------------------------------
+        const StatisticsEngine = {
+            init: function() {
+                // Global Chart.js configuration for dark cosmic theme
+                Chart.defaults.color = '#8b8b9f';
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+            },
+
+            updateCharts: function() {
+                // We use STATE.thoughts (the entire dataset), not filtered, for macro stats
+                const data = STATE.thoughts;
+                
+                document.getElementById('stat-total').textContent = data.length;
+
+                // 1. Calculate Emotion Distribution
+                const emotionCounts = {};
+                Object.keys(CONFIG.emotions).forEach(e => emotionCounts[e] = 0);
+                
+                let maxEmotion = { key: 'hope', count: 0 }; // Default fallback
+
+                data.forEach(t => {
+                    if(emotionCounts[t.emotion] !== undefined) {
+                        emotionCounts[t.emotion]++;
+                        // Track dominant (ignore neutral if possible)
+                        if(emotionCounts[t.emotion] > maxEmotion.count && t.emotion !== 'neutral') {
+                            maxEmotion = { key: t.emotion, count: emotionCounts[t.emotion] };
+                        }
+                    }
+                });
+
+                // Update Dominant Emotion UI Card
+                const domEl = document.getElementById('stat-dominant');
+                const domCard = document.getElementById('card-dominant');
+                const emotionConfig = CONFIG.emotions[maxEmotion.key] || CONFIG.emotions.neutral;
+                
+                domEl.textContent = emotionConfig.name;
+                domEl.style.color = emotionConfig.color;
+                domEl.style.textShadow = `0 0 15px ${emotionConfig.color}`;
+                domCard.style.setProperty('--card-accent', emotionConfig.color);
+
+                // 2. Calculate Room Distribution
+                const roomCounts = {};
+                CONFIG.rooms.forEach(r => roomCounts[r] = 0);
+                data.forEach(t => {
+                    if(roomCounts[t.room] !== undefined) roomCounts[t.room]++;
+                });
+
+                // 3. Render/Update Charts
+                this.renderEmotionChart(emotionCounts);
+                this.renderRoomChart(roomCounts);
+            },
+
+            renderEmotionChart: function(counts) {
+                const canvas = document.getElementById('emotionChart');
+                const labels = [];
+                const values = [];
+                const colors = [];
+
+                for (const [key, value] of Object.entries(counts)) {
+                    labels.push(CONFIG.emotions[key].name);
+                    values.push(value);
+                    colors.push(CONFIG.emotions[key].color);
+                }
+
+                if (STATE.charts.emotion) {
+                    STATE.charts.emotion.data.datasets[0].data = values;
+                    STATE.charts.emotion.update();
+                } else {
+                    STATE.charts.emotion = new Chart(canvas.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: values,
+                                backgroundColor: colors,
+                                borderWidth: 0,
+                                hoverOffset: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'right', labels: { padding: 20, usePointStyle: true, boxWidth: 8 } },
+                                tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 12, cornerRadius: 8 }
+                            },
+                            cutout: '75%',
+                            animation: { animateScale: true, animateRotate: true }
+                        }
+                    });
+                }
+            },
+
+            renderRoomChart: function(counts) {
+                const canvas = document.getElementById('roomChart');
+                const labels = Object.keys(counts);
+                const values = Object.values(counts);
+
+                if (STATE.charts.room) {
+                    STATE.charts.room.data.datasets[0].data = values;
+                    STATE.charts.room.update();
+                } else {
+                    STATE.charts.room = new Chart(canvas.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Thoughts Recorded',
+                                data: values,
+                                backgroundColor: 'rgba(77, 136, 255, 0.6)', // Base blue
+                                borderColor: '#4d88ff',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                hoverBackgroundColor: 'rgba(77, 136, 255, 0.9)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 12, cornerRadius: 8 }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 8. UI CONTROLLER (DOM Management & Interactions)
+        // --------------------------------------------------------------------------
+        const UIController = {
+            init: function() {
+                lucide.createIcons(); // Initialize all SVG icons
+                this.bindEvents();
+                this.generateDynamicFilters();
+            },
+
+            bindEvents: function() {
+                // Primary Application Flow
+                document.getElementById('btn-start-exploration').addEventListener('click', () => App.startExploration());
+                
+                // HUD Controls
+                document.getElementById('btn-create').addEventListener('click', () => this.openCreateModal());
+                document.getElementById('btn-random').addEventListener('click', () => this.openRandomThought());
+                document.getElementById('btn-stats').addEventListener('click', () => this.openDashboard());
+                document.getElementById('btn-filters').addEventListener('click', () => this.toggleFilterPanel());
+                document.getElementById('btn-search').addEventListener('click', () => this.toggleSearch());
+                document.getElementById('btn-settings').addEventListener('click', () => this.openSettings());
+                document.getElementById('btn-reset-cam').addEventListener('click', () => App.resetCamera());
+
+                // Modal Generic Close
+                document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const modal = e.target.closest('.modal-overlay');
+                        if (modal) modal.classList.remove('active');
+                    });
+                });
+
+                // Keyboard Shortcuts
+                window.addEventListener('keydown', (e) => {
+                    // Escape closes modals and panels
+                    if (e.key === 'Escape') {
+                        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+                        document.getElementById('filter-panel').classList.remove('open');
+                        document.getElementById('search-overlay').classList.remove('active');
+                    }
+                    // Ctrl+K for Search
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        this.toggleSearch();
+                    }
+                });
+
+                // --- Form Logic: Create Confession ---
+                const createTextarea = document.getElementById('confession-text');
+                const btnSubmit = document.getElementById('btn-submit-thought');
+                const charCount = document.getElementById('char-current');
+
+                createTextarea.addEventListener('input', (e) => {
+                    const length = e.target.value.length;
+                    charCount.textContent = length;
+                    
+                    // Validation
+                    if (length >= 5 && length <= 1000) {
+                        btnSubmit.disabled = false;
+                    } else {
+                        btnSubmit.disabled = true;
+                    }
+
+                    if(length > 1000) {
+                        e.target.value = e.target.value.substring(0, 1000);
+                        charCount.textContent = 1000;
+                    }
+                });
+
+                btnSubmit.addEventListener('click', () => {
+                    const text = createTextarea.value.trim();
+                    const room = document.getElementById('confession-room').value;
+                    if (text.length >= 5) {
+                        App.submitThought(text, room);
+                        document.getElementById('create-modal').classList.remove('active');
+                        // Reset form
+                        createTextarea.value = '';
+                        btnSubmit.disabled = true;
+                        charCount.textContent = '0';
+                    }
+                });
+
+                // --- Read Modal Logic ---
+                document.getElementById('btn-copy-thought').addEventListener('click', () => {
+                    const content = document.getElementById('read-content').textContent;
+                    navigator.clipboard.writeText(content).then(() => {
+                        this.showToast('Thought copied to clipboard', 'neutral');
+                    });
+                });
+                
+                document.getElementById('btn-read-next').addEventListener('click', () => {
+                    this.openRandomThought();
+                });
+
+                // --- Search Logic ---
+                const searchInput = document.getElementById('input-search');
+                searchInput.addEventListener('input', (e) => {
+                    STATE.filters.search = e.target.value.toLowerCase();
+                    App.applyFilters(); // Triggers render update
+                    
+                    const countEl = document.getElementById('search-count');
+                    countEl.textContent = `${STATE.filteredThoughts.length} stars match`;
+                    countEl.classList.remove('hidden');
+                    if (e.target.value === '') countEl.classList.add('hidden');
+                });
+
+                // --- Filter Tags Logic ---
+                document.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.addEventListener('click', (e) => {
+                        const target = e.target;
+                        const parent = target.parentElement;
+                        
+                        // Visual Toggle
+                        Array.from(parent.children).forEach(c => c.classList.remove('active'));
+                        target.classList.add('active');
+
+                        // Update State
+                        if (parent.id === 'room-filters') STATE.filters.room = target.dataset.filter;
+                        if (parent.id === 'time-filters') STATE.filters.time = target.dataset.time;
+                        if (parent.id === 'emotion-filters') STATE.filters.emotion = target.dataset.emotion;
+
+                        App.applyFilters();
+                    });
+                });
+
+                // --- Settings Logic ---
+                document.getElementById('toggle-sound').addEventListener('change', (e) => {
+                    STATE.settings.soundEnabled = e.target.checked;
+                    if(STATE.settings.soundEnabled) SoundEngine.startAmbient();
+                    else SoundEngine.stopAmbient();
+                });
+                
+                document.getElementById('toggle-decay').addEventListener('change', (e) => {
+                    STATE.settings.decayEnabled = e.target.checked;
+                    // No need to apply filters, renderer handles alpha directly based on this setting
+                });
+
+                document.getElementById('toggle-rotation').addEventListener('change', (e) => {
+                    STATE.settings.rotationEnabled = e.target.checked;
+                });
+            },
+
+            generateDynamicFilters: function() {
+                // Populate Emotion Filters
+                const emotionFilterContainer = document.getElementById('emotion-filters');
+                emotionFilterContainer.innerHTML = `<button class="filter-tag active" data-emotion="all">All Emotions</button>`;
+                
+                Object.keys(CONFIG.emotions).forEach(key => {
+                    const e = CONFIG.emotions[key];
+                    emotionFilterContainer.innerHTML += `
+                        <button class="filter-tag" data-emotion="${key}" style="border-left: 3px solid ${e.color}">
+                            ${e.name}
+                        </button>`;
+                });
+                
+                // Re-bind click events for dynamically added tags
+                emotionFilterContainer.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.addEventListener('click', (e) => {
+                        const target = e.target;
+                        Array.from(emotionFilterContainer.children).forEach(c => c.classList.remove('active'));
+                        target.classList.add('active');
+                        STATE.filters.emotion = target.dataset.emotion;
+                        App.applyFilters();
+                    });
+                });
+            },
+
+            openCreateModal: function() {
+                document.getElementById('create-modal').classList.add('active');
+                setTimeout(() => document.getElementById('confession-text').focus(), 100);
+            },
+
+            openReadModal: function(thoughtId) {
+                const thought = STATE.thoughts.find(t => t.id === thoughtId);
+                if (!thought) return;
+
+                const emotionConfig = CONFIG.emotions[thought.emotion] || CONFIG.emotions.neutral;
+                
+                document.getElementById('read-content').textContent = thought.text;
+                document.getElementById('read-room').innerHTML = `<i data-lucide="door-open" size="16"></i> ${thought.room}`;
+                document.getElementById('read-time').innerHTML = `<i data-lucide="clock" size="16"></i> ${Utils.formatDate(thought.timestamp)}`;
+                
+                const badge = document.getElementById('read-emotion');
+                badge.textContent = emotionConfig.name;
+                badge.style.setProperty('--dot-color', emotionConfig.color);
+
+                lucide.createIcons();
+                document.getElementById('read-modal').classList.add('active');
+                
+                SoundEngine.playNotification();
+            },
+
+            openRandomThought: function() {
+                if (STATE.filteredThoughts.length === 0) {
+                    this.showToast("No thoughts found in current view. Adjust filters.", 'neutral');
+                    return;
+                }
+                
+                // Pick random
+                const randomIndex = Math.floor(Math.random() * STATE.filteredThoughts.length);
+                const randomThought = STATE.filteredThoughts[randomIndex];
+                
+                // Camera Pan to Star
+                STATE.camera.targetX = randomThought.x;
+                STATE.camera.targetY = randomThought.y;
+                // Note: True 3D tracking is complex, we roughly pan to XY.
+                
+                this.openReadModal(randomThought.id);
+            },
+
+            openDashboard: function() {
+                document.getElementById('dashboard-modal').classList.add('active');
+                StatisticsEngine.updateCharts();
+            },
+
+            openSettings: function() {
+                document.getElementById('settings-modal').classList.add('active');
+            },
+
+            toggleFilterPanel: function() {
+                const panel = document.getElementById('filter-panel');
+                panel.classList.toggle('open');
+                // Close search if opening filters
+                if(panel.classList.contains('open')) document.getElementById('search-overlay').classList.remove('active');
+            },
+
+            toggleSearch: function() {
+                const search = document.getElementById('search-overlay');
+                search.classList.toggle('active');
+                if(search.classList.contains('active')) {
+                    document.getElementById('input-search').focus();
+                    document.getElementById('filter-panel').classList.remove('open');
+                }
+            },
+
+            showToast: function(message, emotionKey = 'neutral') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast emotion-${emotionKey}`;
+                
+                const iconContainer = document.createElement('div');
+                iconContainer.className = 'toast-icon';
+                
+                let iconName = 'message-circle';
+                if (emotionKey === 'love') iconName = 'heart';
+                if (emotionKey === 'anger') iconName = 'alert-triangle';
+                if (emotionKey === 'sadness') iconName = 'cloud-rain';
+                
+                iconContainer.innerHTML = `<i data-lucide="${iconName}"></i>`;
+                
+                const content = document.createElement('div');
+                content.className = 'toast-content';
+                content.innerHTML = `<h4>Universe Broadcast</h4><p>${message}</p>`;
+
+                toast.appendChild(iconContainer);
+                toast.appendChild(content);
+                container.appendChild(toast);
+                
+                lucide.createIcons({root: toast});
+
+                // Sequence: Append -> Reflow -> Add Show Class
+                requestAnimationFrame(() => toast.classList.add('show'));
+
+                // Autoplay removal
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 500); // Wait for transition
+                }, 4000);
+            },
+
+            showStarTooltip: function(star, x, y) {
+                const tooltip = document.getElementById('star-hover-info');
+                const emotionConfig = CONFIG.emotions[star.emotion] || CONFIG.emotions.neutral;
+                
+                tooltip.querySelector('.emotion-dot').style.backgroundColor = emotionConfig.color;
+                tooltip.querySelector('.emotion-dot').style.boxShadow = `0 0 10px ${emotionConfig.color}`;
+                tooltip.querySelector('.room-name').textContent = star.room;
+                
+                // Truncate long text
+                const snippet = star.text.length > 45 ? star.text.substring(0, 45) + '...' : star.text;
+                tooltip.querySelector('.snippet').textContent = `"${snippet}"`;
+                
+                tooltip.style.left = `${x}px`;
+                tooltip.style.top = `${y - 25}px`;
+                tooltip.classList.add('active');
+            },
+
+            updateStarTooltipPos: function(x, y) {
+                const tooltip = document.getElementById('star-hover-info');
+                tooltip.style.left = `${x}px`;
+                tooltip.style.top = `${y - 25}px`;
+            },
+
+            hideStarTooltip: function() {
+                document.getElementById('star-hover-info').classList.remove('active');
+            },
+            
+            updateHUDStats: function() {
+                document.getElementById('hud-stat-stars').textContent = STATE.filteredThoughts.length;
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // 9. MAIN APPLICATION ORCHESTRATOR
+        // --------------------------------------------------------------------------
+        const App = {
+            init: function() {
+                console.log("🌌 Initializing Emotion Galaxy...");
+                
+                // Setup Core Systems
+                UIController.init();
+                StatisticsEngine.init();
+                GalaxyRenderer.init();
+                SoundEngine.init();
+
+                // Generate Initial Data State
+                STATE.thoughts = DataStore.generateUniverse(1200); // Heavy initial dataset
+                this.applyFilters(); // Populates filteredThoughts
+
+                // Transition out of loader
+                setTimeout(() => {
+                    document.getElementById('loader-screen').classList.add('fade-out');
+                    STATE.view = 'intro';
+                }, 1200);
+            },
+
+            startExploration: function() {
+                // Must resume AudioContext on user gesture
+                SoundEngine.resume();
+                SoundEngine.startAmbient();
+
+                const welcomeScreen = document.getElementById('welcome-screen');
+                welcomeScreen.classList.add('dissolve');
+                
+                setTimeout(() => {
+                    welcomeScreen.remove();
+                    document.getElementById('hud-overlay').classList.add('visible');
+                    STATE.view = 'galaxy';
+                }, 2000);
+            },
+
+            applyFilters: function() {
+                const { room, time, emotion } = STATE.filters;
+                const now = Date.now();
+                const HOUR = 60 * 60 * 1000;
+                const DAY = 24 * HOUR;
+
+                STATE.filteredThoughts = STATE.thoughts.filter(t => {
+                    // Filter: Room Category
+                    if (room !== 'all' && t.room !== room) return false;
+                    
+                    // Filter: Emotion Profile
+                    if (emotion !== 'all' && t.emotion !== emotion) return false;
+                    
+                    // Filter: Temporal
+                    if (time === 'hour' && (now - t.timestamp > HOUR)) return false;
+                    if (time === 'today' && (now - t.timestamp > DAY)) return false;
+                    if (time === 'week' && (now - t.timestamp > 7 * DAY)) return false;
+
+                    // Note: Text Search filtering is handled directly inside GalaxyRenderer.draw()
+                    // to allow for visual dimming instead of complete removal.
+
+                    return true;
+                });
+
+                UIController.updateHUDStats();
+            },
+
+            submitThought: function(text, room) {
+                // 1. Analyze text for emotion
+                const detectedEmotion = EmotionAnalyzer.analyze(text);
+                
+                // 2. Create Star Data Object
+                // Calculate position slightly in front of current camera to ensure it's visible
+                const spawnRadius = Utils.randomRange(50, 150);
+                const theta = Math.random() * 2 * Math.PI;
+                
+                const newStar = {
+                    id: Utils.generateId(),
+                    text: text,
+                    emotion: detectedEmotion,
+                    room: room,
+                    timestamp: Date.now(),
+                    x: STATE.camera.x + spawnRadius * Math.cos(theta),
+                    y: STATE.camera.y + spawnRadius * Math.sin(theta),
+                    z: STATE.camera.z + 100, // Close to camera plane
+                    baseSize: 3.5, // Emphasize new stars
+                    twinkleSpeed: Utils.randomRange(0.05, 0.1), // Fast twinkle
+                    twinklePhase: 0
+                };
+
+                // 3. Play release sound
+                SoundEngine.playRelease();
+
+                // 4. Trigger visual animation which will push the data to STATE
+                GalaxyRenderer.triggerReleaseAnimation(newStar);
+                
+                // 5. Notify user
+                const emotionName = CONFIG.emotions[detectedEmotion].name;
+                UIController.showToast(`Thought released to the cosmos. Emotion detected: ${emotionName}`, detectedEmotion);
+            },
+
+            resetCamera: function() {
+                STATE.camera.targetX = 0;
+                STATE.camera.targetY = 0;
+                STATE.camera.targetZoom = 1;
+            }
+        };
+
+        // --------------------------------------------------------------------------
+        // BOOTSTRAP
+        // --------------------------------------------------------------------------
+        window.addEventListener('load', () => {
+            App.init();
+        });
+
+    </script>
+</body>
+</html>
